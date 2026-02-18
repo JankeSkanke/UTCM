@@ -27,8 +27,9 @@ Describe 'UTCM Module' {
             $manifest.RootModule | Should -Be 'UTCM.psm1'
         }
 
-        It 'Has version 0.1.0' {
-            $manifest.Version.ToString() | Should -Be '0.1.0'
+        It 'Has a valid version number' {
+            $manifest.Version | Should -Not -BeNullOrEmpty
+            $manifest.Version.ToString() | Should -Match '^\d+\.\d+\.\d+$'
         }
 
         It 'Requires PowerShell 7.0 or later' {

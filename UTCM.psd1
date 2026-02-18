@@ -1,6 +1,6 @@
 @{
     RootModule        = 'UTCM.psm1'
-    ModuleVersion     = '0.1.0'
+    ModuleVersion     = '0.1.1'
     GUID              = 'a3e7c1f0-5b2d-4e8a-9f1c-6d3b7a2e0f4c'
     Author            = 'Jan Ketil Skanke'
     CompanyName       = 'Jan Ketil Skanke'

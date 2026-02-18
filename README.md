@@ -32,10 +32,10 @@ Import-Module .\UTCM\UTCM.psd1
 
 ```powershell
 # Connect to your tenant
-Connect-UTCM -TenantId "yourtenant.onmicrosoft.com" -Mode Delegated
+Connect-UTCM -TenantId "yourtenant.onmicrosoft.com"
 
 # Create a configuration snapshot
-$snapshot = New-UTCMSnapshot -DisplayName "Baseline-2026" -ResourceTypes @(
+$snapshot = New-UTCMSnapshot -DisplayName "Baseline 2026" -Resources @(
     "microsoft.entra.application",
     "microsoft.entra.conditionalAccessPolicy"
 )
@@ -47,9 +47,17 @@ Wait-UTCMSnapshot -SnapshotId $snapshot.id
 Save-UTCMSnapshot -SnapshotId $snapshot.id -OutputPath ".\baseline"
 
 # Create a monitor to track configuration drift
-$monitor = New-UTCMMonitor -DisplayName "Production Monitor" `
-    -SnapshotId $snapshot.id `
-    -MonitorRunFrequencyInHours 24
+$baseline = @{
+    displayName = "Production Baseline"
+    resources   = @(
+        @{
+            displayName  = "CA Policy - Require MFA"
+            resourceType = "microsoft.entra.conditionalAccessPolicy"
+            properties   = @{ displayName = "Require MFA for all users" }
+        }
+    )
+}
+$monitor = New-UTCMMonitor -DisplayName "Production Monitor" -Baseline $baseline
 
 # Check for configuration drift
 Get-UTCMDrift -MonitorId $monitor.id
@@ -61,7 +69,7 @@ Get-UTCMDrift -MonitorId $monitor.id
 
 - 🔐 **Flexible Authentication** - Delegated (interactive), Client Credentials, or Bring-Your-Own-Token
 - 👁️ **Configuration Monitoring** - Track changes across Microsoft 365 tenant configurations
-- 📸 **Snapshot Management** - Capture point-in-time configuration states with 181 resource types
+- 📸 **Snapshot Management** - Capture point-in-time configuration states with 270 resource types
 - 🔍 **Drift Detection** - Identify configuration changes against established baselines
 - 📊 **Comparison Engine** - Deep diff between snapshots with JSON normalization
 - 📈 **Monitoring Results** - Historical tracking of configuration changes over time
@@ -119,35 +127,45 @@ See [Monitor Schema Reference](docs/UTCM-Monitor-Schema-Reference.md) for the fu
 ### Create and Compare Snapshots
 
 ```powershell
-# Take baseline snapshot
-$baseline = New-UTCMSnapshot -DisplayName "Baseline" -ResourceTypes @(
+# Take baseline snapshot and save locally
+$baseline = New-UTCMSnapshot -DisplayName "Baseline" -Resources @(
     "microsoft.entra.conditionalAccessPolicy"
 )
 Wait-UTCMSnapshot -SnapshotId $baseline.id
+Save-UTCMSnapshot -SnapshotId $baseline.id -OutputPath ".\snapshots\baseline"
 
 # Make some changes in your tenant...
 
-# Take comparison snapshot
-$current = New-UTCMSnapshot -DisplayName "Current" -ResourceTypes @(
+# Take comparison snapshot and save locally
+$current = New-UTCMSnapshot -DisplayName "Current State" -Resources @(
     "microsoft.entra.conditionalAccessPolicy"
 )
 Wait-UTCMSnapshot -SnapshotId $current.id
+Save-UTCMSnapshot -SnapshotId $current.id -OutputPath ".\snapshots\current"
 
-# Compare and export results
-Compare-UTCMSnapshot -ReferenceSnapshotId $baseline.id `
-    -DifferenceSnapshotId $current.id `
-    -ExportHtml ".\comparison.html" `
+# Compare saved snapshots and export results
+Compare-UTCMSnapshot -ReferencePath ".\snapshots\baseline" `
+    -DifferencePath ".\snapshots\current" `
+    -OutputFormat HTML `
+    -OutputPath ".\comparison.html" `
     -NormalizeJson
 ```
 
 ### Monitor Configuration Drift
 
 ```powershell
-# Create monitor from snapshot
-$monitor = New-UTCMMonitor `
-    -DisplayName "Production Config Monitor" `
-    -SnapshotId $baseline.id `
-    -MonitorRunFrequencyInHours 6
+# Create monitor with a baseline definition
+$baselineDef = @{
+    displayName = "Production Config Baseline"
+    resources   = @(
+        @{
+            displayName  = "CA Policy - Require MFA"
+            resourceType = "microsoft.entra.conditionalAccessPolicy"
+            properties   = @{ displayName = "Require MFA for all users" }
+        }
+    )
+}
+$monitor = New-UTCMMonitor -DisplayName "Production Config Monitor" -Baseline $baselineDef
 
 # Check drift after monitor runs
 $drifts = Get-UTCMDrift -MonitorId $monitor.id -Status drifted
@@ -160,7 +178,7 @@ $drifts | Format-Table DisplayName, ResourceType, Status, LastModifiedDateTime
 
 ```powershell
 # Create snapshot of security policies
-$snapshot = New-UTCMSnapshot -DisplayName "Security-Baseline" -ResourceTypes @(
+$snapshot = New-UTCMSnapshot -DisplayName "Security Baseline" -Resources @(
     "microsoft.entra.conditionalAccessPolicy",
     "microsoft.entra.authenticationMethodPolicy",
     "microsoft.entra.authenticationStrengthPolicy"
@@ -169,10 +187,18 @@ $snapshot = New-UTCMSnapshot -DisplayName "Security-Baseline" -ResourceTypes @(
 # Save as compliance baseline
 Save-UTCMSnapshot -SnapshotId $snapshot.id -OutputPath ".\compliance\baseline"
 
-# Schedule monitor to run daily
-$monitor = New-UTCMMonitor -SnapshotId $snapshot.id `
-    -DisplayName "Security Compliance Monitor" `
-    -MonitorRunFrequencyInHours 24
+# Create a compliance monitor with baseline
+$securityBaseline = @{
+    displayName = "Security Compliance Baseline"
+    resources   = @(
+        @{
+            displayName  = "MFA Policy"
+            resourceType = "microsoft.entra.authenticationMethodPolicy"
+            properties   = @{ state = "enabled" }
+        }
+    )
+}
+$monitor = New-UTCMMonitor -DisplayName "Security Compliance Monitor" -Baseline $securityBaseline
 ```
 
 ## 🧪 Testing

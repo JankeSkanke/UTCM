@@ -17,15 +17,10 @@ function New-UTCMSnapshot {
             "microsoft.entra.conditionalAccessPolicy",
             "microsoft.entra.authorizationPolicy"
         )
-
-    .NOTES
-        DisplayName must be 8-32 characters, only letters, numbers, and spaces allowed.
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
-        [ValidateLength(8, 32)]
-        [ValidatePattern('^[a-zA-Z0-9 ]+$', ErrorMessage = 'DisplayName can only contain letters, numbers, and spaces.')]
         [string]$DisplayName,
 
         [string]$Description,

@@ -101,10 +101,6 @@ Install-Module Pester -MinimumVersion 5.0 -Force -SkipPublisherCheck
 - Review error messages and stack traces
 - Run with `-Verbose -Debug` for more details
 
-## Test Coverage
-
-Current test status is documented in [TESTING-STATUS.md](TESTING-STATUS.md).
-
 ## Contributing
 
 When adding new functions:

@@ -126,7 +126,7 @@ $snapshot2 = @{
 # Save snapshots
 $ref = Join-Path $sampleDir 'baseline'
 $dif = Join-Path $sampleDir 'current'
-New-Item -ItemType Directory -Path $ref -Force | OutNull
+New-Item -ItemType Directory -Path $ref -Force | Out-Null
 New-Item -ItemType Directory -Path $dif -Force | Out-Null
 $snapshot1 | ConvertTo-Json -Depth 10 | Set-Content (Join-Path $ref 'snapshot.json') -Encoding UTF8
 $snapshot2 | ConvertTo-Json -Depth 10 | Set-Content (Join-Path $dif 'snapshot.json') -Encoding UTF8
