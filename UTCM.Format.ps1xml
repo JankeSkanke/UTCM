@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <ViewDefinitions>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- Configuration Monitors -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <View>
+      <Name>ConfigurationMonitor-TableView</Name>
+      <ViewSelectedBy>
+        <TypeName>Microsoft.Graph.Beta.ConfigurationMonitor</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>DisplayName</Label>
+            <Width>30</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>State</Label>
+            <Width>12</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Resources</Label>
+            <Width>10</Width>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Schedule</Label>
+            <Width>15</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Created</Label>
+            <Width>20</Width>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>displayName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  switch ($_.state) {
+                    'active'   { "`e[32m$($_.state)`e[0m" }
+                    'inactive' { "`e[90m$($_.state)`e[0m" }
+                    'paused'   { "`e[33m$($_.state)`e[0m" }
+                    default    { $_.state }
+                  }
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  if ($_.resourceTypes) { $_.resourceTypes.Count } else { 0 }
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  if ($_.schedule.interval) { "$($_.schedule.interval) hours" } else { 'N/A' }
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  if ($_.createdDateTime) {
+                    [datetime]::Parse($_.createdDateTime).ToString('yyyy-MM-dd HH:mm')
+                  } else { 'N/A' }
+                </ScriptBlock>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- Snapshot Jobs -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <View>
+      <Name>SnapshotJob-TableView</Name>
+      <ViewSelectedBy>
+        <TypeName>Microsoft.Graph.Beta.ConfigurationSnapshotJob</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>ID</Label>
+            <Width>10</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Status</Label>
+            <Width>18</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Resources</Label>
+            <Width>10</Width>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Types</Label>
+            <Width>8</Width>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Created</Label>
+            <Width>20</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Duration</Label>
+            <Width>10</Width>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <ScriptBlock>
+                  $_.id.Substring(0, [Math]::Min(8, $_.id.Length))
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  switch ($_.status) {
+                    'succeeded'           { "`e[32m✓ $($_.status)`e[0m" }
+                    'partiallySuccessful' { "`e[33m⚠ $($_.status)`e[0m" }
+                    'failed'              { "`e[31m✗ $($_.status)`e[0m" }
+                    'inProgress'          { "`e[36m◌ $($_.status)`e[0m" }
+                    'notStarted'          { "`e[90m○ $($_.status)`e[0m" }
+                    default               { $_.status }
+                  }
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  if ($_.resourceCount) { $_.resourceCount } else { 'N/A' }
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  if ($_.resourceTypeCount) { $_.resourceTypeCount } else { 'N/A' }
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  if ($_.createdDateTime) {
+                    [datetime]::Parse($_.createdDateTime).ToString('yyyy-MM-dd HH:mm')
+                  } else { 'N/A' }
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  if ($_.createdDateTime -and $_.lastActionDateTime) {
+                    $start = [datetime]::Parse($_.createdDateTime)
+                    $end = [datetime]::Parse($_.lastActionDateTime)
+                    $duration = $end - $start
+                    if ($duration.TotalMinutes -lt 1) {
+                      "$([int]$duration.TotalSeconds)s"
+                    } else {
+                      "$([int]$duration.TotalMinutes)m"
+                    }
+                  } else { 'N/A' }
+                </ScriptBlock>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- Configuration Drifts -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <View>
+      <Name>ConfigurationDrift-TableView</Name>
+      <ViewSelectedBy>
+        <TypeName>Microsoft.Graph.Beta.ConfigurationDrift</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>Resource</Label>
+            <Width>35</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Type</Label>
+            <Width>35</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Status</Label>
+            <Width>15</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Detected</Label>
+            <Width>20</Width>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>displayName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>resourceType</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  switch ($_.status) {
+                    'inScope'    { "`e[32m✓ $($_.status)`e[0m" }
+                    'drifted'    { "`e[33m⚠ $($_.status)`e[0m" }
+                    'outOfScope' { "`e[90m○ $($_.status)`e[0m" }
+                    default      { $_.status }
+                  }
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  if ($_.lastModifiedDateTime) {
+                    [datetime]::Parse($_.lastModifiedDateTime).ToString('yyyy-MM-dd HH:mm')
+                  } else { 'N/A' }
+                </ScriptBlock>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- Snapshot Comparison Summary -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <View>
+      <Name>SnapshotComparison-Summary</Name>
+      <ViewSelectedBy>
+        <TypeName>UTCM.SnapshotComparison</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>Total Changes</Label>
+            <Width>15</Width>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Added</Label>
+            <Width>10</Width>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Removed</Label>
+            <Width>10</Width>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Modified</Label>
+            <Width>10</Width>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Coverage Gaps</Label>
+            <Width>15</Width>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Shared Types</Label>
+            <Width>15</Width>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <ScriptBlock>
+                  if ($_.Summary.TotalChanges -eq 0) {
+                    "`e[32m$($_.Summary.TotalChanges)`e[0m"
+                  } else {
+                    "`e[33m$($_.Summary.TotalChanges)`e[0m"
+                  }
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  if ($_.Summary.AddedCount -gt 0) {
+                    "`e[32m+$($_.Summary.AddedCount)`e[0m"
+                  } else {
+                    $_.Summary.AddedCount
+                  }
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  if ($_.Summary.RemovedCount -gt 0) {
+                    "`e[31m-$($_.Summary.RemovedCount)`e[0m"
+                  } else {
+                    $_.Summary.RemovedCount
+                  }
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                  if ($_.Summary.ModifiedCount -gt 0) {
+                    "`e[33m~$($_.Summary.ModifiedCount)`e[0m"
+                  } else {
+                    $_.Summary.ModifiedCount
+                  }
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Summary.CoverageGapsCount</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Summary.SharedTypes</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+  </ViewDefinitions>
+</Configuration>

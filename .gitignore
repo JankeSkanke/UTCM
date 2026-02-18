@@ -1,0 +1,22 @@
+# Test logs
+Tests/logs/
+*.log
+
+# Snapshot and report data (may contain tenant-specific info)
+snapshots/
+reports/
+
+# Internal development docs (not for public repo)
+internaldocs/
+
+# Build artifacts
+*.zip
+
+# IDE
+.vscode/
+.vs/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
