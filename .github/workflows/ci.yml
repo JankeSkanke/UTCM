@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate Module
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          $results = Invoke-ScriptAnalyzer -Path . -Recurse -Settings PSGallery -ExcludeRule PSUseShouldProcessForStateChangingFunctions
+          $results | Format-Table -AutoSize
+          if ($results | Where-Object Severity -eq 'Error') {
+            Write-Error "PSScriptAnalyzer found errors"
+            exit 1
+          }
+
+      - name: Validate Module Manifest
+        shell: pwsh
+        run: |
+          $manifest = Test-ModuleManifest -Path ./UTCM.psd1 -ErrorAction Stop
+          Write-Host "Module: $($manifest.Name) v$($manifest.Version)"
+          Write-Host "Author: $($manifest.Author)"
+          Write-Host "Functions: $($manifest.ExportedFunctions.Count)"
+
+          # Verify all declared functions have matching files
+          foreach ($fn in $manifest.ExportedFunctions.Keys) {
+            $file = Get-ChildItem -Path ./Public -Filter "$fn.ps1" -Recurse
+            if (-not $file) {
+              Write-Error "Exported function '$fn' has no matching file in Public/"
+              exit 1
+            }
+          }
+          Write-Host "All exported functions have matching files"
+
+      - name: Import Module
+        shell: pwsh
+        run: |
+          Import-Module ./UTCM.psd1 -Force -ErrorAction Stop
+          $commands = Get-Command -Module UTCM
+          Write-Host "Successfully loaded $($commands.Count) commands"
+
+  test:
+    name: Run Pester Tests
+    runs-on: ubuntu-latest
+    needs: validate
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Pester
+        shell: pwsh
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module -Name Pester -MinimumVersion 5.0 -Force -Scope CurrentUser
+
+      - name: Run Tests
+        shell: pwsh
+        run: |
+          $config = New-PesterConfiguration
+          $config.Run.Path = './Tests'
+          $config.Output.Verbosity = 'Detailed'
+          $config.TestResult.Enabled = $true
+          $config.TestResult.OutputPath = './Tests/TestResults.xml'
+          $config.TestResult.OutputFormat = 'NUnitXml'
+
+          $result = Invoke-Pester -Configuration $config
+
+          if ($result.FailedCount -gt 0) {
+            Write-Error "$($result.FailedCount) test(s) failed"
+            exit 1
+          }
+
+          Write-Host "All $($result.PassedCount) tests passed"
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: Tests/TestResults.xml

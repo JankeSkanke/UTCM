@@ -19,7 +19,7 @@ The UTCM module has comprehensive Pester tests organized into:
 pwsh
 
 # Navigate to the Tests directory
-cd D:\GitHub\CloudWay\UTCM\Tests
+cd D:\GitHub\JankeSkanke\UTCM\Tests
 
 # Run all tests
 .\Run-Tests.ps1

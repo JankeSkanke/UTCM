@@ -10,11 +10,11 @@ A lightweight PowerShell module for working with **Microsoft Graph Unified Tenan
 ### Installation
 
 ```powershell
-# Install from PowerShell Gallery (coming soon)
-Install-Module -Name UTCM
+# Install from PowerShell Gallery
+Install-Module -Name UTCM -Scope CurrentUser
 
 # Or clone and import manually
-git clone https://github.com/CloudWay/UTCM.git
+git clone https://github.com/JankeSkanke/UTCM.git
 Import-Module .\UTCM\UTCM.psd1
 ```
 
@@ -181,16 +181,6 @@ Invoke-Pester -Path .\Tests -Output Detailed
 # Current status: 111/111 tests passing
 ```
 
-## 🛣️ Roadmap
-
-- [ ] Publish to PowerShell Gallery
-- [ ] Support for Teams workload (when API becomes available)
-- [ ] Support for Security & Compliance workload (when API becomes available)
-- [ ] Enhanced filtering options for drift detection
-- [ ] Schedule management for monitors
-- [ ] Webhook notifications for drift events
-- [ ] Export templates for common comparison scenarios
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
@@ -207,8 +197,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🆘 Support
 
-- **Issues**: [GitHub Issues](https://github.com/CloudWay/UTCM/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/CloudWay/UTCM/discussions)
+- **Issues**: [GitHub Issues](https://github.com/JankeSkanke/UTCM/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/JankeSkanke/UTCM/discussions)
 - **Documentation**: See `docs/` folder for detailed API references
 
 ## ⚠️ Important Notes
@@ -220,5 +210,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Review required permissions before granting to service principals
 
 ---
-
-**Built with ❤️ for the Microsoft 365 community**

@@ -2,10 +2,10 @@
     RootModule        = 'UTCM.psm1'
     ModuleVersion     = '0.1.0'
     GUID              = 'a3e7c1f0-5b2d-4e8a-9f1c-6d3b7a2e0f4c'
-    Author            = 'CloudWay'
-    CompanyName       = 'CloudWay'
-    Copyright         = '(c) 2026 CloudWay. All rights reserved.'
-    Description       = 'MVP module for the Microsoft Graph Unified Tenant Configuration Management (UTCM) beta APIs. Uses native REST calls (Invoke-RestMethod) with no SDK dependency.'
+    Author            = 'Jan Ketil Skanke'
+    CompanyName       = 'Jan Ketil Skanke'
+    Copyright         = '(c) 2026 Jan Ketil Skanke. All rights reserved.'
+    Description       = 'PowerShell module for the Microsoft Graph Unified Tenant Configuration Management (UTCM) beta APIs. Manage configuration snapshots, monitors, baselines, and drift detection using native REST calls with no SDK dependency.'
     PowerShellVersion = '7.0'
 
     FormatsToProcess  = @('UTCM.Format.ps1xml')
@@ -46,8 +46,8 @@
     PrivateData = @{
         PSData = @{
             Tags       = @('MicrosoftGraph', 'UTCM', 'ConfigurationManagement', 'Monitoring', 'Drift')
-            ProjectUri = 'https://github.com/CloudWay/UTCM'
-            LicenseUri = ''
+            ProjectUri = 'https://github.com/JankeSkanke/UTCM'
+            LicenseUri = 'https://github.com/JankeSkanke/UTCM/blob/main/LICENSE'
         }
     }
 }
