@@ -308,7 +308,8 @@ Describe 'Compare-UTCMSnapshot' {
 
     Context 'Invalid paths' {
         It 'Throws when ReferencePath does not exist' {
-            { Compare-UTCMSnapshot -ReferencePath 'C:\nonexistent\ref' -DifferencePath 'C:\nonexistent\dif' } |
+            $fakePath = Join-Path ([System.IO.Path]::GetTempPath()) 'utcm-nonexistent-path-test'
+            { Compare-UTCMSnapshot -ReferencePath $fakePath -DifferencePath $fakePath } |
                 Should -Throw '*not found*'
         }
     }

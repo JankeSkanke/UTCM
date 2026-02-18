@@ -183,8 +183,13 @@ function Compare-UTCMSnapshot {
     function ConvertTo-NormalizedJson($obj, $depth = 10) {
         if ($depth -le 0 -or $null -eq $obj) { return $null }
         
-        if ($obj -is [System.Collections.IEnumerable] -and $obj -isnot [string]) {
-            # Handle arrays
+        # Primitive values — return as-is (strings, numbers, booleans, etc.)
+        if ($obj -is [string] -or $obj -is [ValueType]) {
+            return $obj
+        }
+        
+        if ($obj -is [System.Collections.IEnumerable]) {
+            # Handle arrays/collections
             $normalized = @()
             foreach ($item in $obj) {
                 $normalized += ConvertTo-NormalizedJson $item ($depth - 1)
@@ -200,7 +205,7 @@ function Compare-UTCMSnapshot {
             return $sortedObj
         }
         else {
-            # Primitive value
+            # Fallback
             return $obj
         }
     }

@@ -56,13 +56,15 @@ Get-UTCMDrift -MonitorId $monitor.id
 - 📊 **Comparison Engine** - Deep diff between snapshots with JSON normalization
 - 📈 **Monitoring Results** - Historical tracking of configuration changes over time
 
-### Supported Workloads
+### Supported Workloads (270 resource types)
 
-- **Microsoft Entra** (40 resource types) - Applications, Conditional Access, Authentication Methods, etc.
-- **Microsoft Exchange Online** (73 resource types) - Mailboxes, Transport Rules, Protection Policies, etc.
-- **Microsoft Intune** (68 resource types) - Device Configurations, Compliance Policies, App Protection, etc.
+- **Microsoft Entra** (40 resource types) — Applications, Conditional Access, Authentication Methods, Cross-Tenant Access, Entitlement Management, Groups, Roles, etc.
+- **Microsoft Exchange Online** (73 resource types) — Transport Rules, Anti-Phish/Malware Policies, Connectors, DKIM, Mailbox Settings, OWA Policies, Safe Links/Attachments, etc.
+- **Microsoft Teams** (60 resource types) — Meeting/Messaging/Calling Policies, Federation, App Policies, Dial Plans, Emergency Calling, Voice Routing, etc.
+- **Microsoft Intune** (68 resource types) — Device Compliance, Device Configuration, App Protection, Autopilot, Windows Update, Endpoint Detection & Response, etc.
+- **Microsoft Security & Compliance** (29 resource types) — DLP Policies, Sensitivity Labels, Retention Policies, Audit Configuration, Compliance Cases, etc.
 
-> **Note:** Teams and Security/Compliance types are defined in the UTCM schema but not yet supported by the Microsoft Graph API.
+See [Monitor Schema Reference](docs/UTCM-Monitor-Schema-Reference.md) for the full list of resource types per workload.
 
 ## 📚 Available Commands
 
