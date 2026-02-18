@@ -5,7 +5,17 @@
 
 A lightweight PowerShell module for working with **Microsoft Graph Unified Tenant Configuration Management (UTCM)** Beta APIs. Built with native `Invoke-RestMethod` — no SDK dependencies required.
 
-## 🚀 Quick Start
+## � Requirements
+
+- **PowerShell 7.0+** (cross-platform support)
+- **UTCM Service Principal** — The UTCM first-party service principal must be installed in your tenant before use.  
+  Use the built-in helper: `Install-UTCMServicePrincipal -TenantId "yourtenant.onmicrosoft.com"`  
+  Or follow the manual steps in the [Microsoft Learn setup guide](https://learn.microsoft.com/en-us/graph/utcm-authentication-setup#set-up-the-utcm-service-principal).
+- **Microsoft Graph Permissions**:
+  - `TenantConfiguration.Read.All` — minimum for read operations
+  - `TenantConfiguration.ReadWrite.All` — for monitor creation and management
+
+## �🚀 Quick Start
 
 ### Installation
 
@@ -103,13 +113,6 @@ See [Monitor Schema Reference](docs/UTCM-Monitor-Schema-Reference.md) for the fu
 - **[Monitor Schema Reference](docs/UTCM-Monitor-Schema-Reference.md)** - Monitor configuration schema
 - **[Example Scripts](examples/)** - End-to-end usage scenarios
 - **[Testing Guide](Tests/README.md)** - Pester test suite documentation
-
-##  Requirements
-
-- **PowerShell 7.0+** (cross-platform support)
-- **Microsoft Graph Permissions**:
-  - `TenantConfiguration.Read.All` (minimum for read operations)
-  - `TenantConfiguration.ReadWrite.All` (for monitor creation and management)
 
 ## 📝 Examples
 
